@@ -1,12 +1,10 @@
 package kafka_producer.config;
 
-import org.apache.kafka.clients.producer.Callback;
-import org.apache.kafka.clients.producer.KafkaProducer;
-import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.clients.producer.RecordMetadata;
+import org.apache.kafka.clients.producer.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -23,6 +21,9 @@ public class KafkaConfig {
         properties.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         properties.put("linger.ms", 0);
         properties.put("retries", 1);
+        ArrayList<String> interceptors = new ArrayList<>();
+        interceptors.add("kafka_producer.config.MykafkaInterceptor");
+        properties.put(ProducerConfig.INTERCEPTOR_CLASSES_CONFIG, interceptors);
         producer = new KafkaProducer<String, String>(properties);
     }
 
@@ -62,5 +63,11 @@ public class KafkaConfig {
             }
         }
         logger.info("*******Sent {}/{} units.", count, total);
+
+        ProducerConfig.configDef();
+        ProducerConfig.configNames();
+        System.out.println(ProducerConfig.ACKS_CONFIG);
+        producer.close();
+
     }
 }
